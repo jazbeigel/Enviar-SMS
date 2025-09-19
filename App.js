@@ -32,6 +32,12 @@ export default function App() {
     const telUrl = `tel:${sanitizedNumber}`;
 
     try {
+      // Fallback para web
+      if (Platform.OS === 'web') {
+        window.location.href = telUrl;
+        return;
+      }
+
       const canOpen = await Linking.canOpenURL(telUrl);
       if (!canOpen) {
         Alert.alert('Acción no soportada', 'No es posible realizar llamadas desde este dispositivo.');
@@ -58,6 +64,12 @@ export default function App() {
     const smsUrl = `sms:${sanitizedNumber}${bodyParameter}`;
 
     try {
+      // Fallback para web
+      if (Platform.OS === 'web') {
+        window.location.href = smsUrl;
+        return;
+      }
+
       const canOpen = await Linking.canOpenURL(smsUrl);
       if (!canOpen) {
         Alert.alert('Acción no soportada', 'No es posible enviar SMS desde este dispositivo.');
