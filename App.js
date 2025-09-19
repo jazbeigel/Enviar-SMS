@@ -32,17 +32,21 @@ export default function App() {
     const telUrl = `tel:${sanitizedNumber}`;
 
     try {
-      await Linking.openURL(telUrl);
-    } catch (error) {
+      // Fallback para web
       if (Platform.OS === 'web') {
         window.location.href = telUrl;
         return;
       }
 
-      Alert.alert(
-        'Acción no disponible',
-        'No fue posible abrir la aplicación de teléfono. Verifica que tu dispositivo pueda realizar llamadas.',
-      );
+      const canOpen = await Linking.canOpenURL(telUrl);
+      if (!canOpen) {
+        Alert.alert('Acción no soportada', 'No es posible realizar llamadas desde este dispositivo.');
+        return;
+      }
+
+      await Linking.openURL(telUrl);
+    } catch (error) {
+      Alert.alert('Error', 'Ocurrió un error al intentar iniciar la llamada.');
     }
   }, [sanitizedNumber]);
 
@@ -60,17 +64,21 @@ export default function App() {
     const smsUrl = `sms:${sanitizedNumber}${bodyParameter}`;
 
     try {
-      await Linking.openURL(smsUrl);
-    } catch (error) {
+      // Fallback para web
       if (Platform.OS === 'web') {
         window.location.href = smsUrl;
         return;
       }
 
-      Alert.alert(
-        'Acción no disponible',
-        'No fue posible abrir tu app de SMS. Revisa que el dispositivo permita enviar mensajes.',
-      );
+      const canOpen = await Linking.canOpenURL(smsUrl);
+      if (!canOpen) {
+        Alert.alert('Acción no soportada', 'No es posible enviar SMS desde este dispositivo.');
+        return;
+      }
+
+      await Linking.openURL(smsUrl);
+    } catch (error) {
+      Alert.alert('Error', 'Ocurrió un error al intentar preparar el mensaje.');
     }
   }, [message, sanitizedNumber]);
 
