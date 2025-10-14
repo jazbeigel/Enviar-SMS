@@ -18,21 +18,21 @@ export default function App() {
   const [phoneNumber, setPhoneNumber] = useState('');
   const [message, setMessage] = useState('');
 
-  const sanitizedNumber = useMemo(
+  const numeroMandado = useMemo(
     () => sanitizePhoneNumber(phoneNumber),
     [phoneNumber],
   );
 
   const handleCall = useCallback(async () => {
-    if (!sanitizedNumber) {
+    if (!numeroMandado) {
       Alert.alert('Número requerido', 'Ingresa un número telefónico válido.');
       return;
     }
 
-    const telUrl = `tel:${sanitizedNumber}`;
+    const telUrl = `tel:${numeroMandado}`;
 
     try {
-      // Fallback para web
+      // adaptaciones para web
       if (Platform.OS === 'web') {
         window.location.href = telUrl;
         return;
@@ -44,27 +44,26 @@ export default function App() {
         return;
       }
 
-      await Linking.openURL(telUrl);
+      await Linking.openURL(telUrl); //aca es cuando aplico linking
     } catch (error) {
       Alert.alert('Error', 'Ocurrió un error al intentar iniciar la llamada.');
     }
-  }, [sanitizedNumber]);
+  }, [numeroMandado]);
 
   const handleSms = useCallback(async () => {
-    if (!sanitizedNumber) {
+    if (!numeroMandado) {
       Alert.alert('Número requerido', 'Ingresa un número telefónico válido.');
       return;
     }
 
-    const trimmedMessage = message.trim();
-    const encodedMessage = encodeURIComponent(trimmedMessage);
-    const bodyParameter = trimmedMessage
-      ? Platform.select({ ios: `&body=${encodedMessage}`, default: `?body=${encodedMessage}` })
+    const mensajeCortado = message.trim();
+    const mensajeCodeado = encodeURIComponent(mensajeCortado);
+    const paramentroDelBody = mensajeCortado
+      ? Platform.select({ ios: `&body=${mensajeCodeado}`, default: `?body=${mensajeCodeado}` })
       : '';
-    const smsUrl = `sms:${sanitizedNumber}${bodyParameter}`;
+    const smsUrl = `sms:${numeroMandado}${paramentroDelBody}`;
 
     try {
-      // Fallback para web
       if (Platform.OS === 'web') {
         window.location.href = smsUrl;
         return;
@@ -80,7 +79,7 @@ export default function App() {
     } catch (error) {
       Alert.alert('Error', 'Ocurrió un error al intentar preparar el mensaje.');
     }
-  }, [message, sanitizedNumber]);
+  }, [message, numeroMandado]);
 
   return (
     <SafeAreaView style={styles.safeArea}>
